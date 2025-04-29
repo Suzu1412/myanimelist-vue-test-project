@@ -17,4 +17,20 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://api.myanimelist.net/v2',
+        changeOrigin: true,
+        secure: true,      
+        ws: true,
+        rewrite: (path) => path.replace(/^\/api/, ''), // Requerido para solucionar CORS
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('Proxy request:', req.method, req.url);
+          });
+        }
+      }
+    },
+  },
 })

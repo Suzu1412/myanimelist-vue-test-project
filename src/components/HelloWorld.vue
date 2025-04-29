@@ -1,7 +1,28 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 defineProps<{
   msg: string
 }>()
+
+import { ref, onMounted } from 'vue';
+import api from '@/services/api';
+
+
+const fetchAnimeList = async () => {
+  try {
+    const response = await api.get('/anime?q=one&limit=4'); // automatically goes to '/api/anime'
+    console.log(response);
+    //animeList.value = response.data;
+  } catch (err: any) {
+    console.log(err);
+    //error.value = err.message;
+  }
+};
+
+onMounted(() => {
+  fetchAnimeList();
+});
+
+
 </script>
 
 <template>
