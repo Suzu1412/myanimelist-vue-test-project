@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
-import { useAnimeAPI } from '@/composables/useAnimeApi'
+import { useAnimeAPI } from '@/composables/useAnimeAPI'
 
 const { animeList, loading, error, fetchAnimeList } = useAnimeAPI()
 

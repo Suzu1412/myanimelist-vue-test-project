@@ -4,14 +4,6 @@ defineProps<{
 }>()
 
 import { ref, onMounted } from 'vue';
-import { useAnimeAPI } from '@/composables/useAnimeApi';
-
-const { animeList, loading, error, fetchAnimeList } = useAnimeAPI();
-
-onMounted(() => {
-  fetchAnimeList();
-});
-
 
 </script>
 
