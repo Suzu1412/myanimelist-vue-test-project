@@ -7,9 +7,18 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'anime',
-      component: AnimeListView,
+      redirect: '/season/2025/fall',
     },
+    {
+      path: '/season/:year/:season',
+      name: 'SeasonAnime',
+      component: AnimeListView,
+      props: route => ({
+        year: route.params.year,
+        season: route.params.season,
+        page: parseInt(route.query.page as string) || 1
+      })
+    }
   ],
 })
 

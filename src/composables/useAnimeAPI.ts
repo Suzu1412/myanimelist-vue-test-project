@@ -1,8 +1,9 @@
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios from '@/services/api';
 import AnimeList from '@/components/AnimeList.vue';
+import { useRoute, useRouter } from 'vue-router'
 
-export function useAnimeAPI() {
+export function useAnimeAPI(year: string, season: string, page: number) {
   interface Genre {
     id: number
     name: string
@@ -23,6 +24,11 @@ export function useAnimeAPI() {
     node: AnimeNode
   }
 
+  const route = useRoute()
+
+  const limit = 20
+  const offset = (page - 1) * limit
+
 
   const animeList = ref<AnimeWrapper[]>([]);
   const animeDetails = ref<any | null>(null);
@@ -33,7 +39,7 @@ export function useAnimeAPI() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await axios.get('/anime/season/2025/winter?limit=100&fields=id,title,main_picture,synopsis,genres,nsfw');
+      const response = await axios.get(`/anime/season/${year}/${season}?limit=${limit}&offset=${offset}&fields=id,title,main_picture,synopsis,genres`);
       animeList.value = response.data.data;
       console.log(animeList.value);
     } catch (err: any) {
@@ -56,6 +62,9 @@ export function useAnimeAPI() {
       loading.value = false;
     }
   };
+
+  // Re-fetch when the query param changes
+  watch(() => route.query.page, fetchAnimeList)
 
   return {
     animeList,
