@@ -3,6 +3,11 @@ import axios from '@/services/api';
 import AnimeList from '@/components/AnimeList.vue';
 
 export function useAnimeAPI() {
+  interface Genre {
+    id: number
+    name: string
+  }
+
   interface AnimeNode {
     id: number
     title: string
@@ -10,6 +15,8 @@ export function useAnimeAPI() {
       medium: string
       large: string
     }
+    genres: Genre[]
+    synopsis: string
   }
 
   interface AnimeWrapper {
@@ -26,15 +33,9 @@ export function useAnimeAPI() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await axios.get('/anime?q=limit=10');
+      const response = await axios.get('/anime/season/2025/winter?limit=100&fields=id,title,main_picture,synopsis,genres,nsfw');
       animeList.value = response.data.data;
-      console.log(JSON.stringify(response.data, null, 2))
-      animeList.value.forEach((item, index) => {
-        console.log(`Item #${index}:`, item);
-        console.log(`Keys:`, Object.keys(item));
-        console.log(`Node:`, item.node.id);
-      })
-
+      console.log(animeList.value);
     } catch (err: any) {
       error.value = err.message;
     } finally {
