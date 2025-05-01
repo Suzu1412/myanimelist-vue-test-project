@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import AnimeListView from '@/views/AnimeListView.vue'
 
 const router = createRouter({
@@ -13,11 +12,6 @@ const router = createRouter({
       path: '/season/:year/:season',
       name: 'SeasonAnime',
       component: AnimeListView,
-      props: route => ({
-        year: route.params.year,
-        season: route.params.season,
-        page: parseInt(route.query.page as string) || 1
-      })
     }
   ],
 })

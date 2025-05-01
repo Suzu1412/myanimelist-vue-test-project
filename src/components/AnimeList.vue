@@ -1,22 +1,42 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useAnimeAPI } from '@/composables/useAnimeAPI'
 import { useRoute, useRouter } from 'vue-router'
 import '../assets/main.css'
 
 const route = useRoute()
-const year = route.params.year as string // 
-const season = route.params.season as string
-const page = parseInt(route.query.page as string) || 1
+const router = useRouter();
+const year = ref(route.params.year as string)
+const season = ref(route.params.season as string)
+const page = ref(parseInt(route.query.page as string) || 1)
 
-const { animeList, loading, error, fetchAnimeList } = useAnimeAPI(year, season, page)
+const { animeList, loading, error, fetchAnimeList } = useAnimeAPI()
 const expanded = ref(false)
 
-onMounted(() => {
-  fetchAnimeList()
+const seasonLabel = computed(() => {
+  const s = (season.value as string)?.toLowerCase()
+  return s.charAt(0).toUpperCase() + s.slice(1)
 })
 
-watch(() => route.query.page, fetchAnimeList)
+watch(
+  () => [route.params.year, route.params.season, route.query.page],
+  () => {
+    year.value = route.params.year as string
+    season.value = route.params.season as string
+    page.value = parseInt(route.query.page as string) || 1
+    fetchAnimeList(year.value, season.value, page.value)
+  },
+  { immediate: true }
+)
+
+const changePage = (newPage: number) => {
+  if (newPage < 1) return
+  router.push({
+    name: 'SeasonAnime',
+    params: { year: year.value, season: season.value },
+    query: { page: newPage.toString() }
+  })
+}
 
 </script>
 
@@ -53,7 +73,10 @@ watch(() => route.query.page, fetchAnimeList)
   <div v-else-if="error">Error: {{ error }}</div>
 
   <div class="p-6" v-else>
-    <h1 class="text-2xl font-bold mb-4">Anime List</h1>
+    <h1 class="text-4xl font-bold text-emerald-400 text-center mb-8">
+        {{ seasonLabel }} - {{ year }}
+    </h1>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
       <div
         v-for="anime in animeList"
@@ -94,4 +117,20 @@ watch(() => route.query.page, fetchAnimeList)
       </div>
     </div>
   </div>
+
+  <div class="flex justify-center gap-4 mt-6">
+      <button
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+        :disabled="page <= 1"
+        @click="changePage(page - 1)"
+      >
+        Previous
+      </button>
+      <button
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        @click="changePage(page + 1)"
+      >
+        Next
+      </button>
+    </div>
 </template>
