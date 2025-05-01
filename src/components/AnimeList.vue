@@ -10,12 +10,36 @@ const year = ref(route.params.year as string)
 const season = ref(route.params.season as string)
 const page = ref(parseInt(route.query.page as string) || 1)
 
+const currentYear = new Date().getFullYear()
+const years: number[] = []
+
+for (let y = 1980; y <= currentYear + 1; y++) {
+  years.push(y)
+}
+const selectedYear = ref(currentYear)
+
+const seasons = ['winter', 'spring', 'summer', 'fall']
+
 const { animeList, loading, error, fetchAnimeList } = useAnimeAPI()
 const expanded = ref(false)
 
 const seasonLabel = computed(() => {
   const s = (season.value as string)?.toLowerCase()
   return s.charAt(0).toUpperCase() + s.slice(1)
+})
+
+const selectedSeason = computed({
+  get: () => route.params.season as string,
+  set: (newSeason: string) => {
+    router.push({
+      name: 'SeasonAnime',
+      params: {
+        year: route.params.year,
+        season: newSeason
+      },
+      query: route.query
+    })
+  }
 })
 
 watch(
@@ -38,9 +62,46 @@ const changePage = (newPage: number) => {
   })
 }
 
+const searchSeasonAnime = () => {
+  if (!selectedYear.value || !selectedSeason.value) return
+  router.push({
+    name: 'SeasonAnime',
+    params: {
+      year: selectedYear.value.toString(),
+      season: selectedSeason.value.toLowerCase()
+    },
+    query: { page: '1' }
+  })
+}
+
 </script>
 
 <template>
+    <h1 class="text-4xl font-bold text-emerald-400 text-center mb-8">
+        {{ seasonLabel }} - {{ year }}
+    </h1>
+
+    <div class="mb-8">
+    <form @submit.prevent="searchSeasonAnime" class="flex flex-wrap items-center justify-center gap-4">
+      <select v-model="selectedSeason" class="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600">
+        <option disabled value="">Select Season</option>
+        <option v-for="season in seasons" :key="season" :value="season">{{ season }}</option>
+      </select>
+
+      <select v-model="selectedYear" class="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600">
+        <option disabled value="">Select Year</option>
+        <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
+    </select>
+
+      <button
+        type="submit"
+        class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded"
+      >
+        Search
+      </button>
+    </form>
+  </div>
+
 <!-- Spinner while loading -->
   <div v-if="loading" class="flex items-center justify-center h-screen">
     <div class="flex flex-col items-center space-y-4">
@@ -73,10 +134,6 @@ const changePage = (newPage: number) => {
   <div v-else-if="error">Error: {{ error }}</div>
 
   <div class="p-6" v-else>
-    <h1 class="text-4xl font-bold text-emerald-400 text-center mb-8">
-        {{ seasonLabel }} - {{ year }}
-    </h1>
-
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
       <div
         v-for="anime in animeList"
