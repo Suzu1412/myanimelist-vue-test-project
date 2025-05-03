@@ -3,5 +3,5 @@ import AnimeList from '../components/AnimeList.vue'
 </script>
 
 <template>
-    <AnimeList />
+  <AnimeList />
 </template>

@@ -28,7 +28,7 @@ const router = createRouter({
       path: '/season/:year/:season',
       name: 'SeasonAnime',
       component: AnimeListView,
-    }
+    },
   ],
 })
 

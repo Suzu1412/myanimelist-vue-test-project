@@ -1,5 +1,5 @@
-import { ref, watch, type ComputedRef, type Ref } from 'vue';
-import axios from '@/services/api';
+import { ref, watch, type ComputedRef, type Ref } from 'vue'
+import axios from '@/services/api'
 import { useRoute, useRouter } from 'vue-router'
 
 export function useAnimeAPI() {
@@ -28,38 +28,39 @@ export function useAnimeAPI() {
 
   const limit = 10
 
-
-  const animeList = ref<AnimeWrapper[]>([]);
-  const animeDetails = ref<any | null>(null);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
+  const animeList = ref<AnimeWrapper[]>([])
+  const animeDetails = ref<any | null>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
   const fetchAnimeList = async (year: string, season: string, page: number) => {
-    loading.value = true;
-    error.value = null;
+    loading.value = true
+    error.value = null
     try {
       const offset = (page - 1) * limit
-      const response = await axios.get(`/anime/season/${year}/${season}?limit=${limit}&offset=${offset}&fields=id,title,main_picture,synopsis,genres`);
-      animeList.value = response.data.data;
+      const response = await axios.get(
+        `/anime/season/${year}/${season}?limit=${limit}&offset=${offset}&fields=id,title,main_picture,synopsis,genres`,
+      )
+      animeList.value = response.data.data
     } catch (err: any) {
-      error.value = err.message;
+      error.value = err.message
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
   const fetchAnimeById = async (id: string) => {
-    loading.value = true;
-    error.value = null;
+    loading.value = true
+    error.value = null
     try {
-      const response = await axios.get(`/anime/${id}`);
-      animeDetails.value = response.data;
+      const response = await axios.get(`/anime/${id}`)
+      animeDetails.value = response.data
     } catch (err: any) {
-      error.value = err.message;
+      error.value = err.message
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
   return {
     animeList,
@@ -68,5 +69,5 @@ export function useAnimeAPI() {
     error,
     fetchAnimeList,
     fetchAnimeById,
-  };
+  }
 }

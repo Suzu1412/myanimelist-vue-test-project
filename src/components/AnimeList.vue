@@ -5,7 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import '../assets/main.css'
 
 const route = useRoute()
-const router = useRouter();
+const router = useRouter()
 const year = ref(route.params.year as string)
 const season = ref(route.params.season as string)
 const page = ref(parseInt(route.query.page as string) || 1)
@@ -35,11 +35,11 @@ const selectedSeason = computed({
       name: 'SeasonAnime',
       params: {
         year: route.params.year,
-        season: newSeason
+        season: newSeason,
       },
-      query: route.query
+      query: route.query,
     })
-  }
+  },
 })
 
 watch(
@@ -50,7 +50,7 @@ watch(
     page.value = parseInt(route.query.page as string) || 1
     fetchAnimeList(year.value, season.value, page.value)
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const changePage = (newPage: number) => {
@@ -58,7 +58,7 @@ const changePage = (newPage: number) => {
   router.push({
     name: 'SeasonAnime',
     params: { year: year.value, season: season.value },
-    query: { page: newPage.toString() }
+    query: { page: newPage.toString() },
   })
 }
 
@@ -68,30 +68,38 @@ const searchSeasonAnime = () => {
     name: 'SeasonAnime',
     params: {
       year: selectedYear.value.toString(),
-      season: selectedSeason.value.toLowerCase()
+      season: selectedSeason.value.toLowerCase(),
     },
-    query: { page: '1' }
+    query: { page: '1' },
   })
 }
-
 </script>
 
 <template>
-    <h1 class="text-4xl font-bold text-emerald-400 text-center mb-8">
-        {{ seasonLabel }} - {{ year }}
-    </h1>
+  <h1 class="text-4xl font-bold text-emerald-400 text-center mb-8">
+    {{ seasonLabel }} - {{ year }}
+  </h1>
 
-    <div class="mb-8">
-    <form @submit.prevent="searchSeasonAnime" class="flex flex-wrap items-center justify-center gap-4">
-      <select v-model="selectedSeason" class="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600">
+  <div class="mb-8">
+    <form
+      @submit.prevent="searchSeasonAnime"
+      class="flex flex-wrap items-center justify-center gap-4"
+    >
+      <select
+        v-model="selectedSeason"
+        class="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
+      >
         <option disabled value="">Select Season</option>
         <option v-for="season in seasons" :key="season" :value="season">{{ season }}</option>
       </select>
 
-      <select v-model="selectedYear" class="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600">
+      <select
+        v-model="selectedYear"
+        class="px-4 py-2 rounded bg-gray-800 text-white border border-gray-600"
+      >
         <option disabled value="">Select Year</option>
         <option v-for="year in years" :key="year" :value="year">{{ year }}</option>
-    </select>
+      </select>
 
       <button
         type="submit"
@@ -102,7 +110,7 @@ const searchSeasonAnime = () => {
     </form>
   </div>
 
-<!-- Spinner while loading -->
+  <!-- Spinner while loading -->
   <div v-if="loading" class="flex items-center justify-center h-screen">
     <div class="flex flex-col items-center space-y-4">
       <!-- Spinner Icon -->
@@ -112,24 +120,12 @@ const searchSeasonAnime = () => {
         fill="none"
         viewBox="0 0 24 24"
       >
-      <circle
-        class="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        stroke-width="4"
-      />
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-      />
-    </svg>
-    <span class="text-gray-700 font-medium">Loading anime...</span>
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+      </svg>
+      <span class="text-gray-700 font-medium">Loading anime...</span>
     </div>
   </div>
-
 
   <div v-else-if="error">Error: {{ error }}</div>
 
@@ -146,48 +142,41 @@ const searchSeasonAnime = () => {
           class="w-full h-60 object-cover"
         />
         <div class="p-4">
-            <h2 class="text-lg font-semibold text-gray-600">{{ anime.node.title }}</h2>
-            <p class="text-sm text-gray-600">
+          <h2 class="text-lg font-semibold text-gray-600">{{ anime.node.title }}</h2>
+          <p class="text-sm text-gray-600">
             Genre:
-            <span
-                v-for="(genre, index) in anime.node.genres"
-                :key="genre.id"
-                class="italic"
-            >
-                {{ genre.name }}<span v-if="index < anime.node.genres.length - 1">, </span>
+            <span v-for="(genre, index) in anime.node.genres" :key="genre.id" class="italic">
+              {{ genre.name }}<span v-if="index < anime.node.genres.length - 1">, </span>
             </span>
-            </p>
-        
-            <p
-                class="text-sm text-gray-700 mt-2 transition-all duration-300"
-                :class="expanded ? '' : 'line-clamp-3'"
-                >
-                {{ anime.node.synopsis }}
-            </p>
-            <button
-                class="text-blue-500 hover:underline mt-1 text-sm"
-                @click="expanded = !expanded"
-                >
-                {{ expanded ? 'Show less' : 'Show more' }}
-            </button>
+          </p>
+
+          <p
+            class="text-sm text-gray-700 mt-2 transition-all duration-300"
+            :class="expanded ? '' : 'line-clamp-3'"
+          >
+            {{ anime.node.synopsis }}
+          </p>
+          <button class="text-blue-500 hover:underline mt-1 text-sm" @click="expanded = !expanded">
+            {{ expanded ? 'Show less' : 'Show more' }}
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <div class="flex justify-center gap-4 mt-6">
-      <button
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-        :disabled="page <= 1"
-        @click="changePage(page - 1)"
-      >
-        Previous
-      </button>
-      <button
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        @click="changePage(page + 1)"
-      >
-        Next
-      </button>
-    </div>
+    <button
+      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+      :disabled="page <= 1"
+      @click="changePage(page - 1)"
+    >
+      Previous
+    </button>
+    <button
+      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      @click="changePage(page + 1)"
+    >
+      Next
+    </button>
+  </div>
 </template>
